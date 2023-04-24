@@ -133,7 +133,12 @@ class LoadMultiViewImageFromFiles_BEVDet(object):
     """
 
     def __init__(self, data_config, is_train=False,
-                 sequential=False, aligned=False, trans_only=True):
+                 sequential=False, aligned=False, trans_only=True,
+                 file_client_args=dict(backend='disk')):
+        
+        self.file_client_args = file_client_args
+        self.file_client = mmcv.FileClient(**self.file_client_args)
+
         self.is_train = is_train
         self.data_config = data_config
         self.normalize_img = torchvision.transforms.Compose((
@@ -226,7 +231,10 @@ class LoadMultiViewImageFromFiles_BEVDet(object):
         for cam in cams:
             cam_data = results['img_info'][cam]
             filename = cam_data['data_path']
-            img = Image.open(filename)
+            # img = Image.open(filename)
+            img = mmcv.imfrombytes(self.file_client.get(filename), flag='unchanged', channel_order='rgb')
+            img = Image.fromarray(np.uint8(img))
+
             post_rot = torch.eye(2)
             post_tran = torch.zeros(2)
 
@@ -258,7 +266,9 @@ class LoadMultiViewImageFromFiles_BEVDet(object):
                 assert 'adjacent' in results
                 if not type(results['adjacent']) is list:
                     filename_adjacent = results['adjacent']['cams'][cam]['data_path']
-                    img_adjacent = Image.open(filename_adjacent)
+                    # img_adjacent = Image.open(filename_adjacent)
+                    img_adjacent = mmcv.imfrombytes(self.file_client.get(filename_adjacent), flag='unchanged', channel_order='rgb')
+                    img_adjacent = Image.fromarray(np.uint8(img_adjacent))
                     img_adjacent = self.img_transform_core(img_adjacent,
                                                            resize_dims=resize_dims,
                                                            crop=crop,
@@ -268,7 +278,9 @@ class LoadMultiViewImageFromFiles_BEVDet(object):
                 else:
                     for id in range(len(results['adjacent'])):
                         filename_adjacent = results['adjacent'][id]['cams'][cam]['data_path']
-                        img_adjacent = Image.open(filename_adjacent)
+                        # img_adjacent = Image.open(filename_adjacent)
+                        img_adjacent = mmcv.imfrombytes(self.file_client.get(filename_adjacent), flag='unchanged', channel_order='rgb')
+                        img_adjacent = Image.fromarray(np.uint8(img_adjacent))
                         img_adjacent = self.img_transform_core(img_adjacent,
                                                                resize_dims=resize_dims,
                                                                crop=crop,
