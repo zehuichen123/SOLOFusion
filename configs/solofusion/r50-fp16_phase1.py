@@ -33,7 +33,7 @@ find_unused_parameters = False
 # GPUs (num_gpus) and batch size per GPU (batch_size). "28130" is # of training
 # samples in nuScenes.
 num_gpus = 4
-batch_size = 8
+batch_size = 16
 num_iters_per_epoch = 28130 // (num_gpus * batch_size)
 num_epochs = 6
 checkpoint_epoch_interval = 6

@@ -395,7 +395,8 @@ data = dict(
 # use the autoscale-lr flag when doing training, which scales the learning
 # rate based on actual # of gpus used, assuming the given learning rate is
 # w.r.t 8 gpus.
-lr = (2e-4 / 64) * (8 * batch_size)
+# lr = (2e-4 / 64) * (8 * batch_size)
+lr = 2e-4
 optimizer = dict(type='AdamW', lr=lr, weight_decay=1e-2)
 
 # Mixed-precision training scales the loss up by a factor before doing 
@@ -412,7 +413,14 @@ optimizer_config = dict(
     warmup_loss_scale_iters=num_iters_per_epoch // 4,
     loss_scale=512.0
 )
-lr_config = None
+# lr_config = None
+lr_config = dict(
+    policy='step',
+    warmup='linear',
+    warmup_iters=500,
+    warmup_ratio=0.01,
+    step=[100000,])
+
 runner = dict(
     type='IterBasedRunner', max_iters=num_epochs * num_iters_per_epoch)
 checkpoint_config = dict(

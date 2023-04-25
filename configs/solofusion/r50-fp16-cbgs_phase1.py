@@ -40,7 +40,7 @@ find_unused_parameters = False
 # GPUs (num_gpus) and batch size per GPU (batch_size). "28130" is # of training
 # samples in nuScenes.
 num_gpus = 4
-batch_size = 16
+batch_size = 4
 num_iters_per_epoch = 28130 // (num_gpus * batch_size)
 num_epochs = 6
 checkpoint_epoch_interval = 6
@@ -133,7 +133,7 @@ model = dict(
 
     # Standard R50 + FPN for Image Encoder
     img_backbone=dict(
-        pretrained='torchvision://resnet50',
+        pretrained='data/pretrain_models/resnet50-0676ba61.pth',
         type='ResNet',
         depth=50,
         num_stages=4,
