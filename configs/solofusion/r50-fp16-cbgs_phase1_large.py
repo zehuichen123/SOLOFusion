@@ -286,7 +286,7 @@ file_client_args = dict(backend='disk')
 
 train_pipeline = [
     dict(type='LoadMultiViewImageFromFiles_BEVDet', is_train=True, 
-         data_config=data_config),
+         data_config=data_config, file_client_args=file_client_args),
     dict(
         type='LoadPointsFromFile',
         coord_type='LIDAR',
@@ -314,7 +314,8 @@ train_pipeline = [
 ]
 
 test_pipeline = [
-    dict(type='LoadMultiViewImageFromFiles_BEVDet', data_config=data_config),
+    dict(type='LoadMultiViewImageFromFiles_BEVDet', data_config=data_config,
+        file_client_args=file_client_args),
     dict(
         type='MultiScaleFlipAug3D',
         img_scale=(1333, 800),
@@ -331,7 +332,8 @@ test_pipeline = [
 # construct a pipeline for data and gt loading in show function
 # please keep its loading function consistent with test_pipeline (e.g. client)
 eval_pipeline = [
-    dict(type='LoadMultiViewImageFromFiles_BEVDet', data_config=data_config),
+    dict(type='LoadMultiViewImageFromFiles_BEVDet', data_config=data_config,
+        file_client_args=file_client_args),
     dict(
         type='DefaultFormatBundle3D',
         class_names=class_names,
@@ -413,14 +415,7 @@ optimizer_config = dict(
     warmup_loss_scale_iters=num_iters_per_epoch // 4,
     loss_scale=512.0
 )
-# lr_config = None
-lr_config = dict(
-    policy='step',
-    warmup='linear',
-    warmup_iters=500,
-    warmup_ratio=0.01,
-    step=[100000,])
-
+lr_config = None
 runner = dict(
     type='IterBasedRunner', max_iters=num_epochs * num_iters_per_epoch)
 checkpoint_config = dict(

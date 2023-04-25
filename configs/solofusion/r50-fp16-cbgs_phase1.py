@@ -265,7 +265,7 @@ file_client_args = dict(backend='disk')
 
 train_pipeline = [
     dict(type='LoadMultiViewImageFromFiles_BEVDet', is_train=True, 
-         data_config=data_config),
+         data_config=data_config, file_client_args=file_client_args),
     dict(
         type='LoadPointsFromFile',
         coord_type='LIDAR',
@@ -293,7 +293,8 @@ train_pipeline = [
 ]
 
 test_pipeline = [
-    dict(type='LoadMultiViewImageFromFiles_BEVDet', data_config=data_config),
+    dict(type='LoadMultiViewImageFromFiles_BEVDet', data_config=data_config,
+        file_client_args=file_client_args),
     dict(
         type='MultiScaleFlipAug3D',
         img_scale=(1333, 800),
@@ -310,7 +311,8 @@ test_pipeline = [
 # construct a pipeline for data and gt loading in show function
 # please keep its loading function consistent with test_pipeline (e.g. client)
 eval_pipeline = [
-    dict(type='LoadMultiViewImageFromFiles_BEVDet', data_config=data_config),
+    dict(type='LoadMultiViewImageFromFiles_BEVDet', data_config=data_config,
+    file_client_args=file_client_args),
     dict(
         type='DefaultFormatBundle3D',
         class_names=class_names,
@@ -374,7 +376,8 @@ data = dict(
 # use the autoscale-lr flag when doing training, which scales the learning
 # rate based on actual # of gpus used, assuming the given learning rate is
 # w.r.t 8 gpus.
-lr = (2e-4 / 64) * (8 * batch_size)
+# lr = (2e-4 / 64) * (8 * batch_size)
+lr = 2e-4
 optimizer = dict(type='AdamW', lr=lr, weight_decay=1e-2)
 
 # Mixed-precision training scales the loss up by a factor before doing 
