@@ -371,24 +371,21 @@ data = dict(
         img_info_prototype='bevdet',
         use_sequence_group_flag=True,
         sequences_split_num=train_sequences_split_num,
-        filter_empty_gt=filter_empty_gt,
-        file_client_args=file_client_args),
+        filter_empty_gt=filter_empty_gt),
     val=dict(pipeline=test_pipeline, 
              classes=class_names,
              ann_file=data_root + 'nuscenes_infos_val.pkl',
              modality=input_modality, 
              img_info_prototype='bevdet',
              use_sequence_group_flag=True,
-             sequences_split_num=test_sequences_split_num,
-             file_client_args=file_client_args),
+             sequences_split_num=test_sequences_split_num),
     test=dict(pipeline=test_pipeline, 
               classes=class_names,
               ann_file=data_root + 'nuscenes_infos_val.pkl',
               modality=input_modality,
               img_info_prototype='bevdet',
               use_sequence_group_flag=True,
-              sequences_split_num=test_sequences_split_num,
-              file_client_args=file_client_args))
+              sequences_split_num=test_sequences_split_num))
 
 ###############################################################################
 # Optimizer & Training

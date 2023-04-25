@@ -188,7 +188,7 @@ def main():
         model = nn.SyncBatchNorm.convert_sync_batchnorm(model)
         logger.info("Using SyncBN")
 
-    logger.info(f'Model:\n{model}')
+    # logger.info(f'Model:\n{model}')
     datasets = [build_dataset(cfg.data.train)]
     if len(cfg.workflow) == 2:
         val_dataset = copy.deepcopy(cfg.data.val)
