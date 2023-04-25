@@ -140,7 +140,7 @@ class NuScenesDataset(Custom3DDataset):
                  test_adj_ids=None,
                  use_sequence_group_flag=False,
                  sequences_split_num=1,
-                 file_client_args=dict(type='disk')):
+                 file_client_args=dict(backend='disk')):
         self.load_interval = load_interval
         self.use_valid_flag = use_valid_flag
         self.file_client_args = file_client_args
@@ -258,7 +258,7 @@ class NuScenesDataset(Custom3DDataset):
         Returns:
             list[dict]: List of annotations sorted by timestamps.
         """
-        if self.file_client_args['type'] == 'disk':
+        if self.file_client_args['backend'] == 'disk':
             data = mmcv.load(ann_file)
         else:
             data = self.get_pkl_from_ceph(ann_file)
