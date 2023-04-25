@@ -139,9 +139,12 @@ class NuScenesDataset(Custom3DDataset):
                  fix_direction=False,
                  test_adj_ids=None,
                  use_sequence_group_flag=False,
-                 sequences_split_num=1):
+                 sequences_split_num=1,
+                 file_client_args=dict(type='disk')):
         self.load_interval = load_interval
         self.use_valid_flag = use_valid_flag
+        self.file_client_args = file_client_args
+
         super().__init__(
             data_root=data_root,
             ann_file=ann_file,
@@ -255,12 +258,24 @@ class NuScenesDataset(Custom3DDataset):
         Returns:
             list[dict]: List of annotations sorted by timestamps.
         """
-        data = mmcv.load(ann_file)
+        if self.file_client_args['type'] == 'disk':
+            data = mmcv.load(ann_file)
+        else:
+            data = self.get_pkl_from_ceph(ann_file)
+            
         data_infos = list(sorted(data['infos'], key=lambda e: e['timestamp']))
         data_infos = data_infos[::self.load_interval]
         self.metadata = data['metadata']
         self.version = self.metadata['version']
         return data_infos
+
+    def get_pkl_from_ceph(self, ann_file):
+        ann_file_client_args = dict(backend='petrel')
+        file_client = mmcv.FileClient(**ann_file_client_args)
+        # file_client = mmcv.FileClient(**ann_file_client_args)
+        with file_client.get_local_path(ann_file) as local_path:
+            data = mmcv.load(open(local_path, 'rb'), file_format='pickle')
+        return data
 
     def get_data_info(self, index):
         """Get data info according to the given index.
