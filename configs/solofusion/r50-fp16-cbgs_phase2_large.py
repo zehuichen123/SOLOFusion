@@ -1,5 +1,5 @@
 """
-R50, Long-Term, Short-Term, CBGS; (Phase 1)
+R50, Long-Term, Short-Term, CBGS; (Phase 2)
 
 Phase 1: We pre-train without long-term fusion for 6 epochs, similar to what is
     done in NeuralRecon. The concatenation module is simply bypassed. Training 
@@ -19,6 +19,29 @@ Phase 2: We load Part 1 weights and continue training to finish the 20-epoch
         - Weight decay 1e-7 -> 1e-2
 
 Note that CBGS for SOLOFusion is just a longer schedule.
+
+Released Checkpoint Results:
+mAP: 0.4300                                                                                                                                                                                                                                                                                                                                                                 
+mATE: 0.5820
+mASE: 0.2747
+mAOE: 0.4555
+mAVE: 0.2424
+mAAE: 0.2108
+NDS: 0.5384
+Eval time: 91.6s
+
+Per-class results:
+Object Class	AP	ATE	ASE	AOE	AVE	AAE
+car	0.625	0.417	0.158	0.106	0.271	0.197
+truck	0.379	0.596	0.212	0.106	0.199	0.187
+bus	0.407	0.680	0.213	0.055	0.452	0.302
+trailer	0.205	0.988	0.239	0.320	0.146	0.173
+construction_vehicle	0.146	0.860	0.489	1.332	0.121	0.407
+pedestrian	0.473	0.622	0.289	0.706	0.345	0.200
+motorcycle	0.422	0.511	0.256	0.689	0.282	0.216
+bicycle	0.426	0.400	0.262	0.644	0.122	0.003
+traffic_cone	0.624	0.367	0.343	nan	nan	nan
+barrier	0.595	0.379	0.286	0.141	nan	nan
 """
 
 ###############################################################################
@@ -29,7 +52,7 @@ _base_ = ['../_base_/datasets/nus-3d.py',
 
 work_dir = None
 load_from = None
-resume_from = None
+resume_from = "work_dirs/r50-fp16-cbgs_phase1_large/iter_2634.pth"
 resume_optimizer = False
 find_unused_parameters = False
 
@@ -39,11 +62,11 @@ find_unused_parameters = False
 # # of iters in each epoch depends on the overall batch size, which is # of 
 # GPUs (num_gpus) and batch size per GPU (batch_size). "28130" is # of training
 # samples in nuScenes.
-num_gpus = 4
-batch_size = 1
-num_iters_per_epoch = 28130 // (num_gpus * batch_size)
-num_epochs = 6
-checkpoint_epoch_interval = 6
+num_gpus = 8
+batch_size = 4
+num_iters_per_epoch = int(28130 // (num_gpus * batch_size) * 4.554)
+num_epochs = 20
+checkpoint_epoch_interval = 4
 
 # Each nuScenes sequence is ~40 keyframes long. Our training procedure samples
 # sequences first, then loads frames from the sampled sequence in order 
@@ -68,7 +91,7 @@ with_cp = False
 base_bev_channels = 80
 
 # Long-Term Fusion Parameters
-do_history = False
+do_history = True
 history_cat_num = 16
 history_cat_conv_out_channels = 160
 
@@ -84,7 +107,7 @@ bev_encoder_in_channels = (
 
 # Loss Weights
 depth_loss_weight = 3.0
-velocity_code_weight = 0.2
+velocity_code_weight = 1.0
 
 ###############################################################################
 # General Dataset & Augmentation Details.
@@ -161,7 +184,7 @@ model = dict(
         in_channels=[128, 256, 512, 1024],
         upsample_strides=[0.25, 0.5, 1, 2],
         out_channels=[128, 128, 128, 128]),
-        
+
     # A separate, smaller neck for generating stereo features. Format is
     # similar to MVS works.
     stereo_neck=dict(
@@ -398,8 +421,7 @@ data = dict(
 # use the autoscale-lr flag when doing training, which scales the learning
 # rate based on actual # of gpus used, assuming the given learning rate is
 # w.r.t 8 gpus.
-# lr = (2e-4 / 64) * (8 * batch_size)
-lr = 2e-4
+lr = 1e-4
 optimizer = dict(type='AdamW', lr=lr, weight_decay=1e-2)
 
 # Mixed-precision training scales the loss up by a factor before doing 
