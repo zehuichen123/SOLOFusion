@@ -412,8 +412,8 @@ optimizer = dict(type='AdamW', lr=lr, weight_decay=1e-2)
 optimizer_config = dict(
     type='WarmupFp16OptimizerHook', 
     grad_clip=dict(max_norm=5, norm_type=2),
-    warmup_loss_scale_value=1.0,
-    warmup_loss_scale_iters=num_iters_per_epoch // 4,
+    warmup_loss_scale_value=0.1,
+    warmup_loss_scale_iters=200,
     loss_scale=512.0
 )
 lr_config = None
