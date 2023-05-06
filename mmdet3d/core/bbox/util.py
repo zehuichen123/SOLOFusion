@@ -2,7 +2,7 @@
 import numpy as np
 import torch
 
-from mmdet3d.structures.bbox_3d.utils import limit_period
+from mmdet3d.core.bbox.structures.utils import limit_period
 
 
 def normalize_bbox(bboxes, pc_range):
