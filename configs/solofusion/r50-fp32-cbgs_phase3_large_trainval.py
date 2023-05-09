@@ -66,7 +66,7 @@ find_unused_parameters = False
 num_gpus = 8
 batch_size = 4
 num_iters_per_epoch = int((28130 + 6019) // (num_gpus * batch_size) * 4.554)
-num_epochs = 24
+num_epochs = 20
 checkpoint_epoch_interval = 4
 
 # Each nuScenes sequence is ~40 keyframes long. Our training procedure samples
