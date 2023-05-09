@@ -279,7 +279,7 @@ model = dict(
                             pc_range=point_cloud_range,
                             num_frames=1,
                             temporal_weight=0.6,
-                            num_points=4,
+                            num_points=3,
                             embed_dims=256)
                     ],
                     feedforward_channels=512,
