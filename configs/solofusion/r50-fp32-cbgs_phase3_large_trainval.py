@@ -51,7 +51,8 @@ _base_ = ['../_base_/datasets/nus-3d.py',
           '../_base_/default_runtime.py']
 
 work_dir = None
-load_from = None
+load_from = 'work_dirs/r50-fp32-cbgs_phase2_large_trainval_ceph/iter_48540_ema.pth'
+freeze_bev = False
 resume_from = None
 resume_optimizer = False
 find_unused_parameters = False
@@ -306,7 +307,7 @@ model = dict(
                             pc_range=point_cloud_range,
                             num_frames=1,
                             temporal_weight=0.6,
-                            num_points=4,
+                            num_points=3,
                             embed_dims=256)
                     ],
                     feedforward_channels=512,
