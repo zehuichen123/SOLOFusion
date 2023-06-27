@@ -17,7 +17,7 @@ from .voxelnet import VoxelNet
 from .bevdet import BEVDet, BEVDetSequential
 
 from .soloinst import SOLOInst
-
+from .soloinst_deform import SOLOInstDeform
 __all__ = [
     'Base3DDetector', 'VoxelNet', 'DynamicVoxelNet', 'MVXTwoStageDetector',
     'DynamicMVXFasterRCNN', 'MVXFasterRCNN', 'PartA2', 'VoteNet', 'H3DNet',
