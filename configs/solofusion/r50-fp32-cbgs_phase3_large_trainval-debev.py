@@ -5,7 +5,7 @@ _base_ = ['../_base_/datasets/nus-3d.py',
           '../_base_/default_runtime.py']
 
 work_dir = None
-load_from = 'ckpts/iter_48540_ema.pth'
+load_from = 'work_dirs/r50-fp32-cbgs_phase2_large_trainval_ceph/iter_48540_ema.pth'
 freeze_bev = False
 resume_from = None
 resume_optimizer = False
@@ -18,7 +18,7 @@ find_unused_parameters = False
 # GPUs (num_gpus) and batch size per GPU (batch_size). "28130" is # of training
 # samples in nuScenes.
 num_gpus = 8
-batch_size = 2
+batch_size = 4
 num_iters_per_epoch = int((28130 + 6019) // (num_gpus * batch_size) * 4.554)
 num_epochs = 20
 checkpoint_epoch_interval = 1
@@ -344,18 +344,18 @@ model = dict(
 # Set-up the dataset
 
 dataset_type = 'NuScenesDataset'
-data_root = 'data/nuScenes/'
+data_root = 'data/nuscenes/'
 file_client_args = dict(backend='disk')
 
 train_pipeline = [
     dict(type='LoadMultiViewImageFromFiles_BEVDet', is_train=True, 
-         data_config=data_config),#, file_client_args=file_client_args),
+         data_config=data_config, file_client_args=file_client_args),
     dict(
         type='LoadPointsFromFile',
         coord_type='LIDAR',
         load_dim=5,
-        use_dim=5),
-#        file_client_args=file_client_args),
+        use_dim=5,
+        file_client_args=file_client_args),
     dict(type='LoadAnnotations3D', with_bbox_3d=True, with_label_3d=True),
     dict(
         type='GlobalRotScaleTrans',
@@ -378,7 +378,7 @@ train_pipeline = [
 
 test_pipeline = [
     dict(type='LoadMultiViewImageFromFiles_BEVDet', data_config=data_config,
-        ),#file_client_args=file_client_args),
+        file_client_args=file_client_args),
     dict(
         type='MultiScaleFlipAug3D',
         img_scale=(1333, 800),
@@ -396,7 +396,7 @@ test_pipeline = [
 # please keep its loading function consistent with test_pipeline (e.g. client)
 eval_pipeline = [
     dict(type='LoadMultiViewImageFromFiles_BEVDet', data_config=data_config,
-        ),#file_client_args=file_client_args),
+        file_client_args=file_client_args),
     dict(
         type='DefaultFormatBundle3D',
         class_names=class_names,
@@ -505,7 +505,7 @@ lr_config = None
 runner = dict(
     type='IterBasedRunner', max_iters=num_epochs * num_iters_per_epoch)
 checkpoint_config = dict(
-    interval=checkpoint_epoch_interval * num_iters_per_epoch)
+    interval=checkpoint_epoch_interval * num_iters_per_epoch, max_keep_ckpts=5)
 evaluation = dict(
     interval=num_epochs * num_iters_per_epoch, pipeline=eval_pipeline)
 custom_hooks = [dict(
